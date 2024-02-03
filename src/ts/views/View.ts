@@ -17,17 +17,36 @@ export default abstract class View {
     this._parentElement?.insertAdjacentHTML('afterbegin', markup);
   }
 
-  // public update(data) {
-  //   if (!data || (Array.isArray(data) && data.length === 0))
-  //     return this.renderError();
-  //   this._data = data;
-  //   if (this._generateMarkup()) {
-  //     this._parentElement?.insertAdjacentHTML(
-  //       'afterbegin',
-  //       this._generateMarkup()!
-  //     );
-  //   }
-  // }
+  public update(data: Recipe | RecipeNew[] | SearchResults | null): void {
+    if (!data || (Array.isArray(data) && data.length === 0))
+      return this.renderError();
+    this._data = data;
+    const newMarkup = this._generateMarkup();
+    if (!newMarkup) return;
+    const newDom = document.createRange().createContextualFragment(newMarkup);
+    const newElements = Array.from(newDom.querySelectorAll('*'));
+    const curElements = Array.from(
+      this._parentElement?.querySelectorAll('*') as NodeListOf<HTMLElement>
+    );
+
+    newElements.forEach((newEl, i) => {
+      const curEl = curElements[i];
+
+      // Updates changed TEXT
+      if (
+        !newEl.isEqualNode(curEl) &&
+        newEl.firstChild?.nodeValue?.trim() !== ''
+      ) {
+        curEl.textContent = newEl.textContent;
+      }
+      // Updates changed ATTRIBUTES
+      if (!newEl.isEqualNode(curEl)) {
+        Array.from(newEl.attributes).forEach(attr =>
+          curEl.setAttribute(attr.name, attr.value)
+        );
+      }
+    });
+  }
 
   protected abstract _generateMarkup(): string | undefined;
 
