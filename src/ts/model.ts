@@ -82,7 +82,6 @@ export const loadRecipe = async function (id: string): Promise<void> {
       ingredients: recipe.ingredients,
     };
 
-    console.log(newRecipe);
     state.recipe = newRecipe;
   } catch (err) {
     console.error(`${err} 💥💥`);
@@ -110,6 +109,7 @@ export const loadSearchResults = async function (query: string) {
   }
 };
 
+// Pagination function, helps to navigate between pages
 export const getSearchResultsPage = function (
   page: number = state.search.page
 ): RecipeNew[] {
@@ -120,8 +120,9 @@ export const getSearchResultsPage = function (
   return state.search.results.slice(start, end);
 };
 
+// Update servings
 export const updateServings = function (newServings: number): void {
-  if (newServings < 1 || !state.recipe || !state.recipe.servings) return; // Guard clause
+  if (!state.recipe || !state.recipe.servings) return; // Guard clause
 
   state.recipe?.ingredients.forEach(ing => {
     ing.quantity = (ing.quantity * newServings) / state.recipe?.servings!;

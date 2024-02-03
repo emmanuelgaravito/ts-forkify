@@ -17,6 +17,21 @@ export class RecipeView extends View {
     );
   }
 
+  public addHandlerUpdateServings(handler: (updateTo: number) => void) {
+    this._parentElement.addEventListener('click', function (e) {
+      if (!e.target) return; // guard clause
+      const btn = (e.target as HTMLElement).closest('.btn--update-servings');
+      if (!btn) return;
+
+      const updateToData = (btn as HTMLButtonElement)?.dataset?.[
+        'updateTo'
+      ] as string;
+      if (updateToData) {
+        const updateTo = +updateToData;
+        if (updateTo > 0) handler(updateTo);
+      }
+    });
+  }
   protected _ingredientsMarkup(): string | undefined {
     const data = this._data as Recipe;
     if (Array.isArray(this._data)) return;
@@ -39,17 +54,6 @@ export class RecipeView extends View {
           </li>`;
       })
       .join('');
-  }
-
-  addHandlerUpdateServings(handler) {
-    this._parentElement.addEventListener('click', function (e) {
-      const btn = e.target.closest('.btn--update-servings');
-      if (!btn) return;
-      console.log(btn);
-      const updateTo = +btn.dataset.updateTo;
-      console.log(updateTo);
-      handler(updateTo);
-    });
   }
 
   protected _generateMarkup(): string {
