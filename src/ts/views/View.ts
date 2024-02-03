@@ -18,8 +18,6 @@ export default abstract class View {
   }
 
   public update(data: Recipe | RecipeNew[] | SearchResults | null): void {
-    if (!data || (Array.isArray(data) && data.length === 0))
-      return this.renderError();
     this._data = data;
     const newMarkup = this._generateMarkup();
     if (!newMarkup) return;

@@ -17,9 +17,11 @@ const controlRecipes = async function (): Promise<void> {
     if (!id) return; // Guard clause
     // 1) Loading spinner(View)
     recipeView.renderSpinner();
-    // 2) Load recipe by passing the id to fetch it (Model)
+    // 2) Update results view to mark selected search result
+    resultsView.update(model.getSearchResultsPage());
+    // 3) Load recipe by passing the id to fetch it (Model)
     await model.loadRecipe(id);
-    // 2) Render recipe by passing the updated state (View)
+    // 4) Render recipe by passing the updated state (View)
     recipeView.render(model.state.recipe);
     // Test
     // controlServings();
