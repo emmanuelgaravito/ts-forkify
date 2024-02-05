@@ -1,6 +1,7 @@
 interface State {
   recipe: Recipe | null;
   search: SearchResults;
+  bookmarks: RecipeNew[];
 }
 
 interface SearchResults {
@@ -63,6 +64,7 @@ export const state: State = {
     resultsPerPage: RES_PER_PAGE,
     page: 1,
   },
+  bookmarks: [],
 };
 
 // Api Fetch for individual recipe based on id
@@ -88,6 +90,7 @@ export const loadRecipe = async function (id: string): Promise<void> {
     throw err;
   }
 };
+
 // Api Fetch for search All the recipes that matches the query
 export const loadSearchResults = async function (query: string) {
   try {
@@ -103,6 +106,8 @@ export const loadSearchResults = async function (query: string) {
         image_url: rec.image_url,
       };
     });
+    // Reset pagination to page 1 every time we search
+    state.search.page = 1;
   } catch (err) {
     console.error(`${err} 💥💥`);
     throw err;
@@ -129,4 +134,7 @@ export const updateServings = function (newServings: number): void {
   });
   state.recipe.servings = newServings;
 };
+
+export const addBookmark = function (recipe: RecipeNew): void {};
+
 export type { Recipe, RecipeNew, DataNew, SearchResults };
