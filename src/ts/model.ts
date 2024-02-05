@@ -135,6 +135,4 @@ export const updateServings = function (newServings: number): void {
   state.recipe.servings = newServings;
 };
 
-export const addBookmark = function (recipe: RecipeNew): void {};
-
 export type { Recipe, RecipeNew, DataNew, SearchResults };
