@@ -63,8 +63,8 @@ export default abstract class View {
     this._clear();
     this._parentElement?.insertAdjacentHTML('afterbegin', markup);
   }
-
-  public renderError(message: string = this._errorMessage): void {
+  // message: string = this._errorMessage
+  public renderError(): void {
     const markup: string = `
     <div class="error">
     <div>

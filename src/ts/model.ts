@@ -1,7 +1,7 @@
 interface State {
   recipe: Recipe | null;
   search: SearchResults;
-  bookmarks: RecipeNew[];
+  bookmarks: Recipe[];
 }
 
 interface SearchResults {
@@ -19,7 +19,7 @@ interface Data {
   recipe: Recipe;
 }
 interface Recipe {
-  id: number;
+  id: string;
   title: string;
   publisher: string;
   source_url: string;
@@ -27,6 +27,7 @@ interface Recipe {
   servings: number;
   cooking_time: number;
   ingredients: Ingredient[];
+  bookmarked?: boolean;
 }
 
 interface Ingredient {
@@ -85,6 +86,10 @@ export const loadRecipe = async function (id: string): Promise<void> {
     };
 
     state.recipe = newRecipe;
+
+    if (state.bookmarks.some(bookmark => bookmark.id === newRecipe.id))
+      newRecipe.bookmarked = true;
+    else newRecipe.bookmarked = false;
   } catch (err) {
     console.error(`${err} 💥💥`);
     throw err;
@@ -133,6 +138,21 @@ export const updateServings = function (newServings: number): void {
     ing.quantity = (ing.quantity * newServings) / state.recipe?.servings!;
   });
   state.recipe.servings = newServings;
+};
+
+export const addBookmark = function (recipe: Recipe): void {
+  // Add bookmark
+  state.bookmarks.push(recipe);
+  // Mark current recipe as bookmark
+  if (recipe.id === state.recipe?.id) state.recipe.bookmarked = true;
+};
+
+export const deleteBookmark = function (id: string): void {
+  // Delete bookmark
+  const index = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(index, 1);
+  // Mark current recipe as NOT bookmark
+  if (id === state.recipe?.id) state.recipe.bookmarked = false;
 };
 
 export type { Recipe, RecipeNew, DataNew, SearchResults };
