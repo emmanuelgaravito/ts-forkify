@@ -4,6 +4,7 @@ import recipeView from './views/recipeView.ts';
 import searchView from './views/searchView.ts';
 import resultsView from './views/resultsView.ts';
 import paginationView from './views/paginationView.ts';
+import bookmarksView from './views/bookmarksView.ts';
 
 // }
 
@@ -19,6 +20,7 @@ const controlRecipes = async function (): Promise<void> {
     recipeView.renderSpinner();
     // 2) Update results view to mark selected search result
     resultsView.update(model.getSearchResultsPage());
+    bookmarksView.update(model.state.bookmarks);
     // 3) Load recipe by passing the id to fetch it (Model)
     await model.loadRecipe(id);
     // 4) Render recipe by passing the updated state (View)
@@ -65,15 +67,18 @@ const controlServings = function (newServings: number): void {
 
 const controlAddBookmark = function (): void {
   const recipe = model.state.recipe;
-  if (recipe === null) return;
 
+  if (recipe === null) return;
+  // Add or remove bookmark
   if (!model.state.recipe?.bookmarked) {
     model.addBookmark(recipe);
   } else {
     model.deleteBookmark(model.state.recipe.id);
   }
+  // Update recipe view
   recipeView.update(model.state.recipe);
-  console.log(model.state.recipe);
+  // Render bookmarks
+  bookmarksView.render(model.state.bookmarks);
 };
 
 // Initiating the app using publisher and subscriber pattern

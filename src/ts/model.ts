@@ -19,7 +19,7 @@ interface Data {
   recipe: Recipe;
 }
 interface Recipe {
-  id: number;
+  id: string;
   title: string;
   publisher: string;
   source_url: string;
@@ -144,7 +144,7 @@ export const addBookmark = function (recipe: Recipe): void {
   if (recipe.id === state.recipe?.id) state.recipe.bookmarked = true;
 };
 
-export const deleteBookmark = function (id: number): void {
+export const deleteBookmark = function (id: string): void {
   // Delete bookmark
   const index = state.bookmarks.findIndex(el => el.id === id);
   state.bookmarks.splice(index, 1);
