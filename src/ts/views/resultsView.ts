@@ -12,7 +12,7 @@ class resultsView extends View {
 
   protected _generateMarkup(): string {
     if (!Array.isArray(this._data)) return '';
-    console.log(this._data);
+
     return this._data
       ?.map(bookmark => previewView.render(bookmark as Recipe, false))
       .join('');

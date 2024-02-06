@@ -10,9 +10,13 @@ class bookmarksView extends View {
     'No bookmarks yet. Find a nice recipe and bookmark it!';
   protected _message = '';
 
+  addHandlerRender(handler: () => void): void {
+    window.addEventListener('load', handler);
+  }
+
   protected _generateMarkup(): string {
     if (!Array.isArray(this._data)) return '';
-    console.log(this._data);
+
     return this._data
       ?.map(bookmark => previewView.render(bookmark as Recipe, false))
       .join('');
