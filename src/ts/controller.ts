@@ -20,15 +20,18 @@ const controlRecipes = async function (): Promise<void> {
     recipeView.renderSpinner();
     // 2) Update results view to mark selected search result
     resultsView.update(model.getSearchResultsPage());
+    // 3) Update bookmarks view
     bookmarksView.update(model.state.bookmarks);
     // 3) Load recipe by passing the id to fetch it (Model)
     await model.loadRecipe(id);
     // 4) Render recipe by passing the updated state (View)
     recipeView.render(model.state.recipe);
     // Test
+
     // controlServings();
   } catch (err) {
     recipeView.renderError();
+    console.error(err);
   }
 };
 
@@ -81,8 +84,12 @@ const controlAddBookmark = function (): void {
   bookmarksView.render(model.state.bookmarks);
 };
 
+const controlBookmarks = function (): void {
+  bookmarksView.render(model.state.bookmarks);
+};
 // Initiating the app using publisher and subscriber pattern
 const init = function () {
+  bookmarksView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
   recipeView.addHandlerAddBookmark(controlAddBookmark);
