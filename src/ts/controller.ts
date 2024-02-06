@@ -63,10 +63,24 @@ const controlServings = function (newServings: number): void {
   recipeView.update(model.state.recipe);
 };
 
+const controlAddBookmark = function (): void {
+  const recipe = model.state.recipe;
+  if (recipe === null) return;
+
+  if (!model.state.recipe?.bookmarked) {
+    model.addBookmark(recipe);
+  } else {
+    model.deleteBookmark(model.state.recipe.id);
+  }
+  recipeView.update(model.state.recipe);
+  console.log(model.state.recipe);
+};
+
 // Initiating the app using publisher and subscriber pattern
 const init = function () {
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
+  recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
 };
