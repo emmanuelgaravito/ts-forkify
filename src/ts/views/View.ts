@@ -7,11 +7,17 @@ export default abstract class View {
   protected _errorMessage: string = '';
   protected _message: string = '';
 
-  public render(data: Recipe | RecipeNew[] | SearchResults | null): void {
+  public render(
+    data: Recipe | RecipeNew[] | SearchResults | null,
+    render: boolean = true
+  ): string | void {
     if (!data || (Array.isArray(data) && data.length === 0))
       return this.renderError();
+
     this._data = data;
     const markup = this._generateMarkup();
+
+    if (!render) return markup;
     this._clear();
     if (!markup) return;
     this._parentElement?.insertAdjacentHTML('afterbegin', markup);
