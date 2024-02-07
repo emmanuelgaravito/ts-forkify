@@ -1,4 +1,5 @@
 import { TIMEOUT_SEC } from './config.ts';
+import type { RecipeData } from './model.ts';
 
 // Time out promise function that throws an error if the request takes too long
 const timeout = function (s: number): Promise<never> {
@@ -18,6 +19,41 @@ export const getJSON = async function <T extends object>(
       timeout(TIMEOUT_SEC),
       fetch(url),
     ])) as Response;
+
+    const data = (await res.json()) as T;
+
+    if (!res.ok) {
+      // TS guard clauses
+      let errorMessage = 'An error occurred';
+      if (data && 'error' in data) {
+        errorMessage = `${data.error}`;
+      }
+      if (res && 'status' in res) {
+        errorMessage += ` (${res.status})`;
+      }
+      throw new Error(errorMessage);
+    }
+    return data;
+  } catch (err) {
+    throw err; // Throwing the error to be handled by the controller
+  }
+};
+
+export const sendJSON = async function <T extends object>(
+  url: string,
+  uploadData: RecipeData
+): Promise<T> {
+  try {
+    const res = await Promise.race([
+      timeout(TIMEOUT_SEC),
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(uploadData),
+      }),
+    ]);
 
     const data = (await res.json()) as T;
 

@@ -5,6 +5,8 @@ import searchView from './views/searchView.ts';
 import resultsView from './views/resultsView.ts';
 import paginationView from './views/paginationView.ts';
 import bookmarksView from './views/bookmarksView.ts';
+import addRecipeView from './views/addRecipeView.ts';
+import type { RecipeData } from './model.ts';
 
 // }
 
@@ -87,6 +89,17 @@ const controlAddBookmark = function (): void {
 const controlBookmarks = function (): void {
   bookmarksView.render(model.state.bookmarks);
 };
+
+const controlAddRecipe = async function (newRecipe: RecipeData): Promise<void> {
+  try {
+    await model.uploadRecipe(newRecipe);
+  } catch (err) {
+    console.error('💥', err);
+    addRecipeView.renderError((err as Error).message);
+  }
+  //upload the new recipe data
+};
+
 // Initiating the app using publisher and subscriber pattern
 const init = function () {
   bookmarksView.addHandlerRender(controlBookmarks);
@@ -95,6 +108,9 @@ const init = function () {
   recipeView.addHandlerAddBookmark(controlAddBookmark);
   searchView.addHandlerSearch(controlSearchResults);
   paginationView.addHandlerClick(controlPagination);
+  addRecipeView.addHandlerUpload(controlAddRecipe);
 };
 
 init();
+
+console.log(addRecipeView);

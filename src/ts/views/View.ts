@@ -69,8 +69,8 @@ export default abstract class View {
     this._clear();
     this._parentElement?.insertAdjacentHTML('afterbegin', markup);
   }
-  // message: string = this._errorMessage
-  public renderError(): void {
+  //
+  public renderError(message: string = this._errorMessage): void {
     const markup: string = `
     <div class="error">
     <div>
@@ -78,7 +78,7 @@ export default abstract class View {
         <use href="${icon}#icon-alert-triangle"></use>
       </svg>
     </div>
-    <p>${this._errorMessage}</p>
+    <p>${message}</p>
   </div>`;
 
     this._clear();
