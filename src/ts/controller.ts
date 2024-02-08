@@ -6,6 +6,7 @@ import resultsView from './views/resultsView.ts';
 import paginationView from './views/paginationView.ts';
 import bookmarksView from './views/bookmarksView.ts';
 import addRecipeView from './views/addRecipeView.ts';
+import { MODAL_CLOSE_SEC } from './config.ts';
 import type { RecipeData } from './model.ts';
 
 // }
@@ -92,7 +93,24 @@ const controlBookmarks = function (): void {
 
 const controlAddRecipe = async function (newRecipe: RecipeData): Promise<void> {
   try {
+    //show loading spinner
+    addRecipeView.renderSpinner();
+    //upload new recipe
     await model.uploadRecipe(newRecipe);
+    console.log(model.state.recipe);
+    //render recipe
+    recipeView.render(model.state.recipe);
+    //Success message
+    addRecipeView.renderMessage();
+    // render bookmark View
+    bookmarksView.render(model.state.bookmarks);
+    // change ID in URL
+    window.history.pushState(null, '', `#${model.state.recipe?.id}`);
+
+    // close form window
+    setTimeout(() => {
+      addRecipeView.toggleWindow();
+    }, MODAL_CLOSE_SEC * 1000);
   } catch (err) {
     console.error('💥', err);
     addRecipeView.renderError((err as Error).message);

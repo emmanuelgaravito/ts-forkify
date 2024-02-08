@@ -28,6 +28,7 @@ interface Recipe {
   cooking_time: number;
   ingredients: Ingredient[];
   bookmarked?: boolean;
+  key?: string;
 }
 
 interface Ingredient {
@@ -51,6 +52,7 @@ interface RecipeNew {
   image_url: string;
   title: string;
   id: string;
+  key?: string;
 }
 
 import { API_URL, RES_PER_PAGE } from './config.ts';
@@ -70,28 +72,31 @@ export const state: State = {
   bookmarks: [],
 };
 
+const createRecipeObject = function (data: DataMain): Recipe {
+  const recipe = data.data.recipe;
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    source_url: recipe.source_url,
+    image_url: recipe.image_url,
+    servings: recipe.servings,
+    cooking_time: recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    ...(recipe.key && { key: recipe.key }),
+  };
+};
+
 // Api Fetch for individual recipe based on id
 export const loadRecipe = async function (id: string): Promise<void> {
   try {
-    const data = await getJSON<DataMain>(`${API_URL}${id}`);
-    const recipe = data.data.recipe;
+    const data = await getJSON<DataMain>(`${API_URL}${id}?key=${KEY}`);
 
-    const newRecipe: Recipe = {
-      id: recipe.id,
-      title: recipe.title,
-      publisher: recipe.publisher,
-      source_url: recipe.source_url,
-      image_url: recipe.image_url,
-      servings: recipe.servings,
-      cooking_time: recipe.cooking_time,
-      ingredients: recipe.ingredients,
-    };
+    state.recipe = createRecipeObject(data);
 
-    state.recipe = newRecipe;
-
-    if (state.bookmarks.some(bookmark => bookmark.id === newRecipe.id))
-      newRecipe.bookmarked = true;
-    else newRecipe.bookmarked = false;
+    if (state.bookmarks.some(bookmark => bookmark.id === id))
+      state.recipe.bookmarked = true;
+    else state.recipe.bookmarked = false;
   } catch (err) {
     console.error(`${err} 💥💥`);
     throw err;
@@ -103,7 +108,7 @@ export const loadSearchResults = async function (query: string) {
   try {
     state.search.query = query;
 
-    const data = await getJSON<Root>(`${API_URL}?search=${query}`);
+    const data = await getJSON<Root>(`${API_URL}?search=${query}&key=${KEY}`);
 
     state.search.results = data.data.recipes.map(rec => {
       return {
@@ -111,6 +116,7 @@ export const loadSearchResults = async function (query: string) {
         title: rec.title,
         publisher: rec.publisher,
         image_url: rec.image_url,
+        ...(rec.key && { key: rec.key }),
       };
     });
     // Reset pagination to page 1 every time we search
@@ -193,7 +199,7 @@ export const uploadRecipe = async function (
     const ingredients = Object.entries(newRecipe)
       .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
       .map(ing => {
-        const ingArr = ing[1].replaceAll(' ', '').split(',');
+        const ingArr = ing[1].split(',').map(el => el.trim());
         if (ingArr.length !== 3)
           throw new Error(
             'Wrong ingredient format! Please use the correct format.'
@@ -210,11 +216,13 @@ export const uploadRecipe = async function (
       servings: +newRecipe.servings,
       ingredients,
     };
-    const data = await sendJSON(
+    const data: DataMain = await sendJSON(
       `${API_URL}?key=${KEY}`,
       recipe as unknown as RecipeData
     );
-    console.log(data);
+
+    state.recipe = createRecipeObject(data);
+    addBookmark(state.recipe);
   } catch (err) {
     throw err;
   }

@@ -20,12 +20,14 @@ class AddRecipeView extends View {
     '.btn--close-modal'
   ) as HTMLButtonElement;
 
+  public _message: string = 'Your recipe was successfully uploaded 🎉';
+
   constructor() {
     super();
     this._addHandlerShowWindow();
     this._addHandlerHideWindow();
   }
-  toggleWindow(): void {
+  public toggleWindow(): void {
     this._overlay.classList.toggle('hidden');
     this._window.classList.toggle('hidden');
   }
