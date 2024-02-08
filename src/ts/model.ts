@@ -177,9 +177,9 @@ const init = function (): void {
 };
 init();
 
-const clearBookmarks = function (): void {
-  localStorage.clear();
-};
+// const clearBookmarks = function (): void {
+//   localStorage.clear();
+// };
 
 // clearBookmarks();
 type RecipeData = {
